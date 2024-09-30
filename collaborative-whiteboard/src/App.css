@@ -17,8 +17,6 @@ body {
 
 .whiteboard-canvas {
     background-color: #e3e3e3;
-    width: 100%;
-    height: 100%;
     border-radius: 10px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.6);
 }
