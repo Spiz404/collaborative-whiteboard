@@ -4,7 +4,6 @@ import { io, Socket } from "socket.io-client";
 const WhiteBoardComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [socket, setSocket] = React.useState<Socket | null>(null);
-  useEffect(() => {}, []);
 
   useEffect(() => {
     if (socket) {
@@ -12,7 +11,8 @@ const WhiteBoardComponent = () => {
         const image = new Image();
         image.src = data;
         const canvas: HTMLCanvasElement | null = canvasRef.current;
-        const ctx = canvas?.getContext("2d");
+        let ctx: CanvasRenderingContext2D | null = null;
+        if (canvas) ctx = canvas?.getContext("2d");
         if (ctx) {
           image.onload = () => {
             ctx.drawImage(image, 0, 0);
@@ -49,18 +49,16 @@ const WhiteBoardComponent = () => {
       if (!isDrawing) return;
       console.log("drawing");
       const canvas: HTMLCanvasElement | null = canvasRef.current;
-      //const rect = canvas?.getBoundingClientRect();
 
-      const rect = { left: 0, top: 0 };
       const ctx = canvas?.getContext("2d");
 
       if (ctx) {
         ctx.beginPath();
         ctx.moveTo(lastX, lastY);
-        ctx.lineTo(e.offsetX - rect.left, e.offsetY - rect.top);
+        ctx.lineTo(e.offsetX, e.offsetY);
         ctx.stroke();
       }
-      [lastX, lastY] = [e.offsetX - rect.left, e.offsetY - rect.top];
+      [lastX, lastY] = [e.offsetX, e.offsetY];
     };
 
     const endDrawing = () => {
