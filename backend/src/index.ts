@@ -1,12 +1,14 @@
 import express, { Request, Response } from "express";
+import { Server } from "socket.io";
 import axios from "axios";
 
-const app = express();
+const io = new Server();
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World");
+io.on("connection", (socket) => {
+  console.log("a user connected");
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
 });
 
-app.listen(8080, () => {
-  console.log("Server running on http://localhost:8080");
-});
+io.listen(5000);
