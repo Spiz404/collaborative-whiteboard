@@ -1,5 +1,5 @@
 # Collaborative whiteboard
 
-## teck stack
+## tech stack
 
 Built using React, Node.js, Express, and Socket.io
