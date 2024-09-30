@@ -102,7 +102,6 @@ const WhiteBoardComponent = () => {
       const boundingRect = canvas.getBoundingClientRect();
       console.log(boundingRect);
       const { width, height } = boundingRect;
-      console.log("canvas size", width, height);
       setCanvasSize({ width, height });
       canvas.height = height;
       canvas.width = width;
@@ -137,8 +136,8 @@ const WhiteBoardComponent = () => {
 
   return (
     <canvas
-      width="400"
-      height="400"
+      width="1000"
+      height="700"
       id="whiteboard"
       className="whiteboard-canvas"
       ref={canvasRef}
