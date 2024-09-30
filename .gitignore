@@ -1,4 +1,4 @@
-backend/node_modules
-collaborative-whiteboard/node_modules
+backend/node_modules/
+collaborative-whiteboard/node_modules/
 backend/.env
 collaborative-whiteboard/.env
