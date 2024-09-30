@@ -1,20 +1,10 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 
 const WhiteBoardComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [socket, setSocket] = useState<Socket | null>(null);
-
-  useEffect(() => {
-    let newSocket: Socket | null = null;
-    try {
-      newSocket = io("http://192.168.1.120:5000");
-      console.log("connected to server ", newSocket);
-    } catch (e) {
-      console.log(e);
-    }
-    setSocket(newSocket);
-  }, []);
+  const [socket, setSocket] = React.useState<Socket | null>(null);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     if (socket) {
@@ -33,16 +23,19 @@ const WhiteBoardComponent = () => {
   }, [socket]);
 
   useEffect(() => {
+    let newSocket: Socket | null = null;
+    try {
+      newSocket = io("http://192.168.1.120:5000");
+      console.log("connected to server ", newSocket);
+      console.log("is socket null", newSocket == null);
+      setSocket(newSocket);
+    } catch (e) {
+      console.log(e);
+    }
     let isDrawing = false;
     let lastX = 0;
     let lastY = 0;
-    /*
-    const startDrawing = (e: { offsetX: number; offsetY: number } | {touches : {clientX : number, clientY: number}[]}) => {
-      console.log("start drawing");
-      isDrawing = true;
-      [lastX, lastY] = [e.offsetX, e.offsetY];
-    };
-     */
+
     const startDrawing = (e: MouseEvent | TouchEvent) => {
       isDrawing = true;
       if (e instanceof MouseEvent) {
@@ -76,10 +69,9 @@ const WhiteBoardComponent = () => {
 
       const canvas = canvasRef.current;
       const dataUrl = canvas?.toDataURL();
-      console.log("is socket null", socket == null);
-      if (socket) {
+      if (newSocket) {
         console.log("emitting data");
-        socket.emit("canvasImage", dataUrl);
+        newSocket.emit("canvasImage", dataUrl);
       }
       isDrawing = false;
     };
