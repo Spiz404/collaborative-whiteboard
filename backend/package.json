@@ -1,0 +1,25 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "test": "test",
+    "start": "node dist/index.js",
+    "build": "tsc"
+  },
+  "author": "spiz404",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/axios": "^0.9.36",
+    "axios": "^1.7.7",
+    "express": "^4.21.0",
+    "nodemon": "^3.1.7",
+    "socket.io": "^4.8.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0"
+  }
+}
