@@ -3,7 +3,6 @@ import { Server } from "socket.io";
 import axios from "axios";
 
 const io = new Server({ cors: { origin: "*" } });
-
 io.on("connection", (socket) => {
   console.log("a user connected");
 
@@ -17,4 +16,7 @@ io.on("connection", (socket) => {
   });
 });
 
-io.listen(5000);
+let port = 3000;
+if (process.env.SERVER_PORT) port = parseInt(process.env.SERVER_PORT);
+
+io.listen(port);
