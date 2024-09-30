@@ -1,18 +1,55 @@
-import React, { useRef, useEffect } from "react";
-import io from "socket.io-client";
+import React, { useRef, useEffect, useState } from "react";
+import { io, Socket } from "socket.io-client";
 
 const WhiteBoardComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
+
+  useEffect(() => {
+    let newSocket: Socket | null = null;
+    try {
+      newSocket = io("http://192.168.1.120:5000");
+      console.log("connected to server ", newSocket);
+    } catch (e) {
+      console.log(e);
+    }
+    setSocket(newSocket);
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("canvasImage", (data) => {
+        const image = new Image();
+        image.src = data;
+        const canvas: HTMLCanvasElement | null = canvasRef.current;
+        const ctx = canvas?.getContext("2d");
+        if (ctx) {
+          image.onload = () => {
+            ctx.drawImage(image, 0, 0);
+          };
+        }
+      });
+    }
+  }, [socket]);
 
   useEffect(() => {
     let isDrawing = false;
     let lastX = 0;
     let lastY = 0;
-
-    const startDrawing = (e: { offsetX: number; offsetY: number }) => {
+    /*
+    const startDrawing = (e: { offsetX: number; offsetY: number } | {touches : {clientX : number, clientY: number}[]}) => {
       console.log("start drawing");
       isDrawing = true;
       [lastX, lastY] = [e.offsetX, e.offsetY];
+    };
+     */
+    const startDrawing = (e: MouseEvent | TouchEvent) => {
+      isDrawing = true;
+      if (e instanceof MouseEvent) {
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+      } else {
+        [lastX, lastY] = [e.touches[0].clientX, e.touches[0].clientY];
+      }
     };
 
     const draw = (e: { offsetX: number; offsetY: number }) => {
@@ -34,7 +71,16 @@ const WhiteBoardComponent = () => {
     };
 
     const endDrawing = () => {
+      if (!isDrawing) return;
       console.log("end drawing");
+
+      const canvas = canvasRef.current;
+      const dataUrl = canvas?.toDataURL();
+      console.log("is socket null", socket == null);
+      if (socket) {
+        console.log("emitting data");
+        socket.emit("canvasImage", dataUrl);
+      }
       isDrawing = false;
     };
 
