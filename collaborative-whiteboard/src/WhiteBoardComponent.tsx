@@ -46,24 +46,39 @@ const WhiteBoardComponent = () => {
       if (e instanceof MouseEvent) {
         [lastX, lastY] = [e.offsetX, e.offsetY];
       } else {
-        [lastX, lastY] = [e.touches[0].clientX, e.touches[0].clientY];
+        const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
+        [lastX, lastY] = [
+          e.touches[0].clientX - rect.left,
+          e.touches[0].clientY - rect.top,
+        ];
       }
     };
 
-    const draw = (e: { offsetX: number; offsetY: number }) => {
+    //const draw = (e: { offsetX: number; offsetY: number }) => {
+    const draw = (e: MouseEvent | TouchEvent) => {
+      e.preventDefault();
+      if (e instanceof TouchEvent) console.log("TOUCH EVENT");
       if (!isDrawing) return;
       console.log("drawing");
       const canvas: HTMLCanvasElement | null = canvasRef.current;
 
       const ctx = canvas?.getContext("2d");
+      const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
+      const newPosition =
+        e instanceof MouseEvent
+          ? { posx: e.offsetX, posy: e.offsetY }
+          : {
+              posx: e.touches[0].clientX - rect.left,
+              posy: e.touches[0].clientY - rect.top,
+            };
 
       if (ctx) {
         ctx.beginPath();
         ctx.moveTo(lastX, lastY);
-        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.lineTo(newPosition.posx, newPosition.posy);
         ctx.stroke();
       }
-      [lastX, lastY] = [e.offsetX, e.offsetY];
+      [lastX, lastY] = [newPosition.posx, newPosition.posy];
     };
 
     const endDrawing = () => {
@@ -100,7 +115,10 @@ const WhiteBoardComponent = () => {
       ctx.lineJoin = "round";
     }
     canvas?.addEventListener("resize", resize);
+    canvas?.addEventListener("touchstart", startDrawing);
+    canvas?.addEventListener("touchmove", draw);
     canvas?.addEventListener("mousedown", startDrawing);
+    canvas?.addEventListener("touchend", endDrawing);
     canvas?.addEventListener("mousemove", draw);
     canvas?.addEventListener("mouseup", endDrawing);
     canvas?.addEventListener("mouseout", endDrawing);
@@ -111,6 +129,9 @@ const WhiteBoardComponent = () => {
       canvas?.removeEventListener("mousemove", draw);
       canvas?.removeEventListener("mouseup", endDrawing);
       canvas?.removeEventListener("mouseout", endDrawing);
+      canvas?.removeEventListener("touchstart", startDrawing);
+      canvas?.removeEventListener("touchmove", draw);
+      canvas?.removeEventListener("touchend", endDrawing);
     };
   }, []);
 
