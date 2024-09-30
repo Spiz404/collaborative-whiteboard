@@ -1,4 +1,6 @@
 backend/node_modules/
+backend/dist/
 collaborative-whiteboard/node_modules/
 backend/.env
 collaborative-whiteboard/.env
+collaborative-whiteboard/dist/
