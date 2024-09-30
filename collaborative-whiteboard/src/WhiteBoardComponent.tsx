@@ -5,6 +5,11 @@ const WhiteBoardComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [socket, setSocket] = React.useState<Socket | null>(null);
 
+  const [canvasSize, setCanvasSize] = React.useState({
+    width: 0,
+    height: 0,
+  });
+
   useEffect(() => {
     if (socket) {
       socket.on("canvasImage", (data) => {
@@ -74,7 +79,19 @@ const WhiteBoardComponent = () => {
       isDrawing = false;
     };
 
+    const resize = () => {
+      console.log("resizing");
+    };
     const canvas: HTMLCanvasElement | null = canvasRef.current;
+    if (canvas) {
+      const boundingRect = canvas.getBoundingClientRect();
+      console.log(boundingRect);
+      const { width, height } = boundingRect;
+      console.log("canvas size", width, height);
+      setCanvasSize({ width, height });
+      canvas.height = height;
+      canvas.width = width;
+    }
     const ctx = canvas?.getContext("2d");
     if (ctx) {
       ctx.strokeStyle = "#000";
@@ -82,16 +99,25 @@ const WhiteBoardComponent = () => {
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
     }
+    canvas?.addEventListener("resize", resize);
     canvas?.addEventListener("mousedown", startDrawing);
     canvas?.addEventListener("mousemove", draw);
     canvas?.addEventListener("mouseup", endDrawing);
     canvas?.addEventListener("mouseout", endDrawing);
+
+    return () => {
+      canvas?.removeEventListener("resize", resize);
+      canvas?.removeEventListener("mousedown", startDrawing);
+      canvas?.removeEventListener("mousemove", draw);
+      canvas?.removeEventListener("mouseup", endDrawing);
+      canvas?.removeEventListener("mouseout", endDrawing);
+    };
   }, []);
 
   return (
     <canvas
-      width="1300"
-      height="900"
+      width="400"
+      height="400"
       id="whiteboard"
       className="whiteboard-canvas"
       ref={canvasRef}
