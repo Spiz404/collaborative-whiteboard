@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import io from "socket.io-client";
 
 const WhiteBoardComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -9,12 +10,9 @@ const WhiteBoardComponent = () => {
     let lastY = 0;
 
     const startDrawing = (e: { offsetX: number; offsetY: number }) => {
-      const canvas = canvasRef.current;
       console.log("start drawing");
       isDrawing = true;
-      //const rect = canvas?.getBoundingClientRect();
-      const rect = { left: 0, top: 0 };
-      [lastX, lastY] = [e.offsetX - rect.left, e.offsetY - rect.top];
+      [lastX, lastY] = [e.offsetX, e.offsetY];
     };
 
     const draw = (e: { offsetX: number; offsetY: number }) => {
